@@ -1,25 +1,17 @@
-import 'dart:developer';
-
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:todoappme/todo/cubit/todocubit_cubit.dart';
 import 'package:todoappme/todo/model/todo_model.dart';
 
-class TodoHomePage extends StatefulWidget {
+class TodoHomePage extends StatelessWidget {
   const TodoHomePage({
     Key? key,
   }) : super(key: key);
 
   @override
-  State<TodoHomePage> createState() => _TodoHomePageState();
-}
-
-class _TodoHomePageState extends State<TodoHomePage> {
-  @override
   Widget build(BuildContext context) {
-    final _todoList = <TodoModel>[];
-
-    // _todoList.add(TodoModel(name: "name", description: "description"));
-    // _todoList.add(TodoModel(name: "name", description: "description"));
-    //_todoList.add(TodoModel(name: "name", description: "description"));
+    final todoliststate = context.watch<TodocubitCubit>().state;
+    final todolist = todoliststate.todolist;
 
     String tname = "";
     final _text = TextEditingController();
@@ -30,19 +22,15 @@ class _TodoHomePageState extends State<TodoHomePage> {
           centerTitle: true,
         ),
         body: ListView.separated(
-            itemCount: _todoList.length,
+            itemCount: todolist.length,
             separatorBuilder: (context, index) => const Divider(),
             itemBuilder: (context, index) {
+              final todo = todolist[index];
               return ListTile(
-                title: Text(_todoList[index].name),
-                subtitle: Text(_todoList[index].description),
+                title: Text(todo.name),
+                subtitle: Text(todo.description),
                 trailing: IconButton(
-                    onPressed: () {
-                      setState(() {
-                        _todoList.remove(_todoList[index]);
-                      });
-                    },
-                    icon: const Icon(Icons.delete)),
+                    onPressed: () {}, icon: const Icon(Icons.delete)),
               );
             }),
         //---
@@ -64,12 +52,12 @@ class _TodoHomePageState extends State<TodoHomePage> {
                       actions: [
                         TextButton(
                           onPressed: () {
-                            setState(() {
-                              tname = _text.text;
-                              _todoList
-                                  .add(TodoModel(name: tname, description: ""));
-                            });
-                            log(tname);
+                            tname = _text.text;
+                            final todocubit = context.read<TodocubitCubit>();
+                            final newtodo = TodoModel(
+                                name: tname, description: "", isDone: false);
+
+                            todocubit.addtodo(newtodo);
 
                             Navigator.of(context).pop();
                           },

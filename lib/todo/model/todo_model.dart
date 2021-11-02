@@ -6,5 +6,10 @@ class TodoModel {
   TodoModel(
       {required this.name, required this.description, this.isDone = false});
 
-  List<TodoModel> tasklist = [];
+  TodoModel copyWith({String? name, String? description, bool? isDone}) {
+    return TodoModel(
+        name: name ?? this.name,
+        description: description ?? this.description,
+        isDone: isDone ?? this.isDone);
+  }
 }
